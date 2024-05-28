@@ -4,10 +4,10 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.corpus import stopwords
 import nltk
 
-# 載入已儲存的模型
+# load the pretrained model
 loaded_model = joblib.load('svm_fake_news_model.pkl')
 
-# 文字清理函數（與訓練時的清理步驟一致）
+# clear the data
 def clean(text):
     text = re.sub(r'http\S+', '', text)
     text = re.sub(r'\W', ' ', text)
@@ -27,20 +27,23 @@ def preprocess(text):
     text = remove_stopwords(text)
     return text
 
-# 定義預測函數
+# Define the prediction model
 def predict_news(news_text):
-    # 預處理新聞內文
+    # pre-handle the content
     processed_text = preprocess(news_text)
-    # 進行預測
+    
+    # prediction 
     prediction = loaded_model.predict([processed_text])[0]
-    # 獲取預測信賴分數
+    
+    # get the confidence score
     decision_function = loaded_model.decision_function([processed_text])
     confidence_score = decision_function[0] if prediction == 'fake' else -decision_function[0]
-    # 返回真假判斷和信賴分數
+    
     return prediction[0], confidence_score
 
 # input
-news_text = input("請輸入新聞的內容: ")
+news_text = input("Please enter the news content: ")
 label, confidence = predict_news(news_text)
+
 print(f"Prediction: {label}")
 print(f"Confidence Score: {confidence}")

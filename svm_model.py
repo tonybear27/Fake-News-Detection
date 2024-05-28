@@ -13,7 +13,7 @@ import numpy as np
 from tqdm import tqdm
 import joblib
 
-# 下載NLTK的停用詞庫
+# download the data of stop words 
 nltk.download('stopwords')
 from nltk.corpus import stopwords
 
@@ -36,28 +36,28 @@ train_data = pd.concat([train_fake, train_true], ignore_index=True)
 val_data = pd.concat([val_fake, val_true], ignore_index=True)
 test_data = pd.concat([test_fake, test_true], ignore_index=True)
 
-# 文本清理函數
+# Clear the data
 def clean(text):
-    # 移除URL
+    # Remove URL
     text = re.sub(r'http\S+', '', text)
-    # 移除所有特殊字符
+    # Remove all the special words
     text = re.sub(r'\W', ' ', text)
-    # 移除單個字母
+    # Remove singal characters
     text = re.sub(r'\s+[a-zA-Z]\s+', ' ', text)
-    # 移除多個空格
+    # Remove space
     text = re.sub(r'\s+', ' ', text)
-    # 轉換為小寫
+    # Turn into lowercase
     text = text.lower()
     return text
 
-# 移除停用詞
+# Remove stop words
 def remove_stopwords(text):
     stop_words = set(stopwords.words('english'))
     words = text.split()
     filtered_words = [word for word in words if word not in stop_words]
     return ' '.join(filtered_words)
 
-# 清理並移除停用詞
+# Clear and remove stop words
 train_data['text_clean'] = train_data['text'].apply(clean).apply(remove_stopwords)
 val_data['text_clean'] = val_data['text'].apply(clean).apply(remove_stopwords)
 test_data['text_clean'] = test_data['text'].apply(clean).apply(remove_stopwords)
@@ -94,7 +94,7 @@ for param_name in sorted(parameters.keys()):
 
 # Save the trained model
 joblib.dump(grid_search, 'svm_fake_news_model.pkl')
-print("模型以保存為 svm_fake_news_model.pkl")
+print("Save as svm_fake_news_model.pkl")
 
 # Evaluate on validation set
 val_predictions = grid_search.predict(x_val)
