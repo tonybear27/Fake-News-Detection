@@ -2,14 +2,23 @@ import re
 import joblib
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.corpus import stopwords
+from contextlib import redirect_stdout
 import nltk
 import warnings
+import os
+from colorama import Fore, Style
+import colorama
+colorama.init(autoreset=True)
+
 warnings.filterwarnings("ignore", category=UserWarning, module='sklearn.base')
+nltk.download('stopwords', quiet=True)
 
 # load the pretrained model
 global language
 language = input('Please enter the language first (French/English/Spanish): ')
-loaded_model = joblib.load(f'{language}_model.pkl')
+flag = input('Please input title or text (title/text): ')
+
+loaded_model = joblib.load(f'{language}_model_{flag}.pkl')
 language = language.lower()
 
 # clear the data
@@ -50,5 +59,11 @@ def predict_news(news_text):
 news_text = input("Please enter the news content: ")
 label, confidence = predict_news(news_text)
 
-print(f"Prediction: {label}")
+if label == 't':
+    label = 'Real News'
+    print(f"{Fore.GREEN}Prediction: {label}")
+else:
+    label = 'Fake News'
+    print(f"{Fore.RED}Prediction: {label}")
+
 print(f"Confidence Score: {confidence}")
