@@ -3,9 +3,14 @@ import joblib
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.corpus import stopwords
 import nltk
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module='sklearn.base')
 
 # load the pretrained model
-loaded_model = joblib.load('svm_fake_news_model.pkl')
+global language
+language = input('Please enter the language first (French/English/Spanish): ')
+loaded_model = joblib.load(f'{language}_model.pkl')
+language = language.lower()
 
 # clear the data
 def clean(text):
@@ -17,7 +22,7 @@ def clean(text):
     return text
 
 def remove_stopwords(text):
-    stop_words = set(stopwords.words('english'))
+    stop_words = set(stopwords.words(language))
     words = text.split()
     filtered_words = [word for word in words if word not in stop_words]
     return ' '.join(filtered_words)

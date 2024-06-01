@@ -23,13 +23,16 @@ def load_data(file_path, label):
     data['label'] = label
     return data
 
+language = input("Input Language(English/French/Spanish): ")
+flag = input("Input title or text for training(title/text): ")
+
 # Read data
-train_fake = load_data('Dataset/training/Fake.csv', 'fake')
-train_true = load_data('Dataset/training/True.csv', 'true')
-val_fake = load_data('Dataset/validation/Fake.csv', 'fake')
-val_true = load_data('Dataset/validation/True.csv', 'true')
-test_fake = load_data('Dataset/testing/Fake.csv', 'fake')
-test_true = load_data('Dataset/testing/True.csv', 'true')
+train_fake = load_data(f'Dataset/{language}/training/Fake.csv', 'fake')
+train_true = load_data(f'Dataset/{language}/training/True.csv', 'true')
+val_fake = load_data(f'Dataset/{language}/validation/Fake.csv', 'fake')
+val_true = load_data(f'Dataset/{language}/validation/True.csv', 'true')
+test_fake = load_data(f'Dataset/{language}/testing/Fake.csv', 'fake')
+test_true = load_data(f'Dataset/{language}/testing/True.csv', 'true')
 
 # Combine data
 train_data = pd.concat([train_fake, train_true], ignore_index=True)
@@ -52,15 +55,16 @@ def clean(text):
 
 # Remove stop words
 def remove_stopwords(text):
-    stop_words = set(stopwords.words('english'))
+    stop_words = set(stopwords.words(f'{language}'))
     words = text.split()
     filtered_words = [word for word in words if word not in stop_words]
     return ' '.join(filtered_words)
 
 # Clear and remove stop words
-train_data['text_clean'] = train_data['text'].apply(clean).apply(remove_stopwords)
-val_data['text_clean'] = val_data['text'].apply(clean).apply(remove_stopwords)
-test_data['text_clean'] = test_data['text'].apply(clean).apply(remove_stopwords)
+print(train_data['text'])
+train_data['text_clean'] = train_data[flag].apply(clean).apply(remove_stopwords)
+val_data['text_clean'] = val_data[flag].apply(clean).apply(remove_stopwords)
+test_data['text_clean'] = test_data[flag].apply(clean).apply(remove_stopwords)
 
 # Define x and y
 x_train = train_data['text_clean']
@@ -93,8 +97,8 @@ for param_name in sorted(parameters.keys()):
     print("\t%s: %r" % (param_name, best_parameters[param_name]))
 
 # Save the trained model
-joblib.dump(grid_search, 'svm_fake_news_model.pkl')
-print("Save as svm_fake_news_model.pkl")
+joblib.dump(grid_search, f'{language}_model_{flag}.pkl')
+print(f"Save as {language}_model_{flag}.pkl")
 
 # Evaluate on validation set
 val_predictions = grid_search.predict(x_val)
