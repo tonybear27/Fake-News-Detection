@@ -56,7 +56,7 @@ def predict_news(news_text):
     return prediction[0], confidence_score
 
 # input
-news_text = input("Please enter the news content: ")
+news_text = input(f"Please enter the news {flag}: ")
 label, confidence = predict_news(news_text)
 
 if label == 't':
